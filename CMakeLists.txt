@@ -7,7 +7,7 @@ add_compile_definitions(HYPRGRAPHICS_VERSION="${HYPRGRAPHICS_VERSION}")
 project(
   hyprgraphics
   VERSION ${HYPRGRAPHICS_VERSION}
-  DESCRIPTION "Small C++ library for utilities used across the Hypr* ecosystem")
+  DESCRIPTION "Small C++ library for graphics / resource utilities used across the Hypr* ecosystem")
 
 include(CTest)
 include(GNUInstallDirs)
