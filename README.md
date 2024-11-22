@@ -4,7 +4,7 @@ Hyprgraphics is a small C++ library with graphics / resource related utilities u
 
 ## Stability
 
-Hyprutils depends on the ABI stability of the stdlib implementation of your compiler. Sover bumps will be done only for hyprutils ABI breaks, not stdlib.
+Hyprgraphics depends on the ABI stability of the stdlib implementation of your compiler. Sover bumps will be done only for hyprgraphics ABI breaks, not stdlib.
 
 ## Building
 
