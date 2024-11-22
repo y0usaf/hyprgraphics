@@ -12,6 +12,10 @@ namespace Hyprgraphics {
         CImage(const std::string& path);
         ~CImage();
 
+        CImage(const CImage&)            = delete;
+        CImage& operator=(const CImage&) = delete;
+
+        //
         bool                                             success();
         bool                                             hasAlpha();
         std::string                                      getError();
