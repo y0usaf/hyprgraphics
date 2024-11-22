@@ -1,0 +1,61 @@
+cmake_minimum_required(VERSION 3.19)
+
+file(READ "${CMAKE_SOURCE_DIR}/VERSION" VER_RAW)
+string(STRIP ${VER_RAW} HYPRGRAPHICS_VERSION)
+add_compile_definitions(HYPRGRAPHICS_VERSION="${HYPRGRAPHICS_VERSION}")
+
+project(
+  hyprgraphics
+  VERSION ${HYPRGRAPHICS_VERSION}
+  DESCRIPTION "Small C++ library for utilities used across the Hypr* ecosystem")
+
+include(CTest)
+include(GNUInstallDirs)
+
+set(PREFIX ${CMAKE_INSTALL_PREFIX})
+set(INCLUDE ${CMAKE_INSTALL_FULL_INCLUDEDIR})
+set(LIBDIR ${CMAKE_INSTALL_FULL_LIBDIR})
+
+configure_file(hyprgraphics.pc.in hyprgraphics.pc @ONLY)
+
+set(CMAKE_CXX_STANDARD 23)
+
+if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES DEBUG)
+  message(STATUS "Configuring hyprgraphics in Debug")
+  add_compile_definitions(HYPRGRAPHICS_DEBUG)
+else()
+  add_compile_options(-O3)
+  message(STATUS "Configuring hyprgraphics in Release")
+endif()
+
+file(GLOB_RECURSE SRCFILES CONFIGURE_DEPENDS "src/*.cpp" "include/*.hpp")
+file(GLOB_RECURSE PUBLIC_HEADERS CONFIGURE_DEPENDS "include/*.hpp")
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(deps REQUIRED IMPORTED_TARGET pixman-1 cairo hyprutils libjpeg libwebp libjxl libjxl_cms libjxl_threads libmagic)
+
+add_library(hyprgraphics SHARED ${SRCFILES})
+target_include_directories(
+  hyprgraphics
+  PUBLIC "./include"
+  PRIVATE "./src")
+set_target_properties(hyprgraphics PROPERTIES VERSION ${HYPRGRAPHICS_VERSION}
+                                           SOVERSION 0)
+target_link_libraries(hyprgraphics PkgConfig::deps)
+
+# tests
+add_custom_target(tests)
+
+add_executable(hyprgraphics_image "tests/image.cpp")
+target_link_libraries(hyprgraphics_image PRIVATE hyprgraphics PkgConfig::deps)
+add_test(
+  NAME "Image"
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+  COMMAND hyprgraphics_image "image")
+add_dependencies(tests hyprgraphics_image)
+
+# Installation
+install(TARGETS hyprgraphics)
+install(DIRECTORY "include/hyprgraphics" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES ${CMAKE_BINARY_DIR}/hyprgraphics.pc
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
