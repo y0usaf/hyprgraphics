@@ -7,7 +7,9 @@ add_compile_definitions(HYPRGRAPHICS_VERSION="${HYPRGRAPHICS_VERSION}")
 project(
   hyprgraphics
   VERSION ${HYPRGRAPHICS_VERSION}
-  DESCRIPTION "Small C++ library for graphics / resource utilities used across the Hypr* ecosystem")
+  DESCRIPTION
+    "Small C++ library for graphics / resource utilities used across the Hypr* ecosystem"
+)
 
 include(CTest)
 include(GNUInstallDirs)
@@ -18,7 +20,7 @@ set(LIBDIR ${CMAKE_INSTALL_FULL_LIBDIR})
 
 configure_file(hyprgraphics.pc.in hyprgraphics.pc @ONLY)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 26)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES DEBUG)
   message(STATUS "Configuring hyprgraphics in Debug")
@@ -32,7 +34,19 @@ file(GLOB_RECURSE SRCFILES CONFIGURE_DEPENDS "src/*.cpp" "include/*.hpp")
 file(GLOB_RECURSE PUBLIC_HEADERS CONFIGURE_DEPENDS "include/*.hpp")
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(deps REQUIRED IMPORTED_TARGET pixman-1 cairo hyprutils libjpeg libwebp libjxl libjxl_cms libjxl_threads libmagic)
+pkg_check_modules(
+  deps
+  REQUIRED
+  IMPORTED_TARGET
+  pixman-1
+  cairo
+  hyprutils
+  libjpeg
+  libwebp
+  libjxl
+  libjxl_cms
+  libjxl_threads
+  libmagic)
 
 add_library(hyprgraphics SHARED ${SRCFILES})
 target_include_directories(
@@ -40,7 +54,7 @@ target_include_directories(
   PUBLIC "./include"
   PRIVATE "./src")
 set_target_properties(hyprgraphics PROPERTIES VERSION ${HYPRGRAPHICS_VERSION}
-                                           SOVERSION 0)
+                                              SOVERSION 0)
 target_link_libraries(hyprgraphics PkgConfig::deps)
 
 # tests
@@ -56,6 +70,7 @@ add_dependencies(tests hyprgraphics_image)
 
 # Installation
 install(TARGETS hyprgraphics)
-install(DIRECTORY "include/hyprgraphics" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY "include/hyprgraphics"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES ${CMAKE_BINARY_DIR}/hyprgraphics.pc
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
