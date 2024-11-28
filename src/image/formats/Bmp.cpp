@@ -64,6 +64,8 @@ class BmpHeader {
             return "Unable to parse bitmap header: wrong image size";
 
         file.seekg(dataOffset);
+
+        return std::nullopt;
     };
 };
 

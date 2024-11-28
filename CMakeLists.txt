@@ -30,6 +30,10 @@ else()
   message(STATUS "Configuring hyprgraphics in Release")
 endif()
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  add_compile_definitions(__cpp_concepts=202002L)
+endif()
+
 file(GLOB_RECURSE SRCFILES CONFIGURE_DEPENDS "src/*.cpp" "include/*.hpp")
 file(GLOB_RECURSE PUBLIC_HEADERS CONFIGURE_DEPENDS "include/*.hpp")
 

@@ -50,7 +50,7 @@ std::expected<cairo_surface_t*, std::string> JXL::createSurfaceFromJXL(const std
         .num_channels = 4,
         .data_type    = JXL_TYPE_UINT8,
         .endianness   = JXL_LITTLE_ENDIAN,
-        .align        = cairo_image_surface_get_stride(cairoSurface),
+        .align        = (size_t)cairo_image_surface_get_stride(cairoSurface),
     };
 
     const auto OUTPUTSIZE = basicInfo.xsize * basicInfo.ysize * format.num_channels;
