@@ -102,8 +102,8 @@ std::expected<cairo_surface_t*, std::string> BMP::createSurfaceFromBMP(const std
     if (!std::filesystem::exists(path))
         return std::unexpected("loading bmp: file doesn't exist");
 
-    std::ifstream  bitmapImageStream(path);
-    BmpHeader      bitmapHeader;
+    std::ifstream bitmapImageStream(path);
+    BmpHeader     bitmapHeader;
     if (const auto RET = bitmapHeader.load(bitmapImageStream); RET.has_value())
         return std::unexpected("loading bmp: " + *RET);
 

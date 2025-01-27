@@ -17,23 +17,23 @@ Hyprgraphics::CImage::CImage(const std::string& path) : filepath(path) {
     const auto                                   len = path.length();
     if (path.find(".png") == len - 4 || path.find(".PNG") == len - 4) {
         CAIROSURFACE = PNG::createSurfaceFromPNG(path);
-        mime = "image/png";
+        mime         = "image/png";
     } else if (path.find(".jpg") == len - 4 || path.find(".JPG") == len - 4 || path.find(".jpeg") == len - 5 || path.find(".JPEG") == len - 5) {
         CAIROSURFACE  = JPEG::createSurfaceFromJPEG(path);
         imageHasAlpha = false;
-        mime = "image/jpeg";
+        mime          = "image/jpeg";
     } else if (path.find(".bmp") == len - 4 || path.find(".BMP") == len - 4) {
         CAIROSURFACE  = BMP::createSurfaceFromBMP(path);
         imageHasAlpha = false;
-        mime = "image/bmp";
+        mime          = "image/bmp";
     } else if (path.find(".webp") == len - 5 || path.find(".WEBP") == len - 5) {
         CAIROSURFACE = WEBP::createSurfaceFromWEBP(path);
-        mime = "image/webp";
+        mime         = "image/webp";
     } else if (path.find(".jxl") == len - 4 || path.find(".JXL") == len - 4) {
 
 #ifdef JXL_FOUND
         CAIROSURFACE = JXL::createSurfaceFromJXL(path);
-        mime = "image/jxl";
+        mime         = "image/jxl";
 #else
         lastError = "hyprgraphics compiled without JXL support";
         return;
@@ -49,15 +49,15 @@ Hyprgraphics::CImage::CImage(const std::string& path) : filepath(path) {
 
         if (first_word == "PNG") {
             CAIROSURFACE = PNG::createSurfaceFromPNG(path);
-            mime = "image/png";
+            mime         = "image/png";
         } else if (first_word == "JPEG") {
             CAIROSURFACE  = JPEG::createSurfaceFromJPEG(path);
             imageHasAlpha = false;
-            mime = "image/jpeg";
+            mime          = "image/jpeg";
         } else if (first_word == "BMP") {
             CAIROSURFACE  = BMP::createSurfaceFromBMP(path);
             imageHasAlpha = false;
-            mime = "image/bmp";
+            mime          = "image/bmp";
         } else {
             lastError = "unrecognized image";
             return;

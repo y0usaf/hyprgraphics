@@ -31,16 +31,16 @@ std::expected<cairo_surface_t*, std::string> PNG::createSurfaceFromPNG(const std
     spng_set_png_buffer(ctx, PNGCONTENT.data(), PNGCONTENT.size());
 
     spng_ihdr ihdr{0};
-    if (spng_get_ihdr(ctx, &ihdr))
-        return std::unexpected("loading png: file content was empty (bad file?)");
+    if (int ret = spng_get_ihdr(ctx, &ihdr); ret)
+        return std::unexpected(std::string{"loading png: spng_get_ihdr failed: "} + spng_strerror(ret));
 
     int fmt = SPNG_FMT_PNG;
     if (ihdr.color_type == SPNG_COLOR_TYPE_INDEXED)
         fmt = SPNG_FMT_RGB8;
 
     size_t imageLength = 0;
-    if (spng_decoded_image_size(ctx, fmt, &imageLength))
-        return std::unexpected("loading png: spng_decoded_image_size failed");
+    if (int ret = spng_decoded_image_size(ctx, fmt, &imageLength); ret)
+        return std::unexpected(std::string{"loading png: spng_decoded_image_size failed: "} + spng_strerror(ret));
 
     uint8_t* imageData = (uint8_t*)malloc(imageLength);
 
@@ -48,9 +48,25 @@ std::expected<cairo_surface_t*, std::string> PNG::createSurfaceFromPNG(const std
         return std::unexpected("loading png: mallocing failed, out of memory?");
 
     // TODO: allow proper decode of high bitrate images
-    if (spng_decode_image(ctx, imageData, imageLength, SPNG_FMT_RGBA8, 0)) {
+    bool succeededDecode = false;
+    int  ret             = spng_decode_image(ctx, imageData, imageLength, SPNG_FMT_RGBA8, 0);
+    if (!ret)
+        succeededDecode = true;
+
+    if (!succeededDecode && ret == SPNG_EBUFSIZ) {
+        // hack, but I don't know why decoded_image_size is sometimes wrong
+        imageLength = ihdr.height * ihdr.width * 4 /* FIXME: this is wrong if we doing >32bpp!!!! */;
+        imageData   = (uint8_t*)realloc(imageData, imageLength);
+
+        ret = spng_decode_image(ctx, imageData, imageLength, SPNG_FMT_RGBA8, 0);
+    }
+
+    if (!ret)
+        succeededDecode = true;
+
+    if (!succeededDecode) {
         free(imageData);
-        return std::unexpected("loading png: spng_decode_image failed (invalid image?)");
+        return std::unexpected(std::string{"loading png: spng_decode_image failed: "} + spng_strerror(ret) + " (bad image?)");
     }
 
     // convert RGBA8888 -> ARGB8888 premult for cairo
