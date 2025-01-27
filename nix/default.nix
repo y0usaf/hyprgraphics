@@ -9,6 +9,7 @@
   hyprutils,
   libjpeg,
   libjxl,
+  libspng,
   libwebp,
   pixman,
   version ? "git",
@@ -50,6 +51,7 @@ in
       hyprutils
       libjpeg
       libjxl
+      libspng
       libwebp
       pixman
     ];
