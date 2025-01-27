@@ -47,7 +47,8 @@ pkg_check_modules(
   hyprutils
   libjpeg
   libwebp
-  libmagic)
+  libmagic
+  spng)
 
 pkg_check_modules(
   JXL

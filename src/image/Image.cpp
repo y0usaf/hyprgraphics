@@ -5,6 +5,7 @@
 #include "formats/JpegXL.hpp"
 #endif
 #include "formats/Webp.hpp"
+#include "formats/Png.hpp"
 #include <magic.h>
 #include <format>
 
@@ -15,7 +16,7 @@ Hyprgraphics::CImage::CImage(const std::string& path) : filepath(path) {
     std::expected<cairo_surface_t*, std::string> CAIROSURFACE;
     const auto                                   len = path.length();
     if (path.find(".png") == len - 4 || path.find(".PNG") == len - 4) {
-        CAIROSURFACE = cairo_image_surface_create_from_png(path.c_str());
+        CAIROSURFACE = PNG::createSurfaceFromPNG(path);
         mime = "image/png";
     } else if (path.find(".jpg") == len - 4 || path.find(".JPG") == len - 4 || path.find(".jpeg") == len - 5 || path.find(".JPEG") == len - 5) {
         CAIROSURFACE  = JPEG::createSurfaceFromJPEG(path);
@@ -47,7 +48,7 @@ Hyprgraphics::CImage::CImage(const std::string& path) : filepath(path) {
         const auto first_word = type_str.substr(0, type_str.find(" "));
 
         if (first_word == "PNG") {
-            CAIROSURFACE = cairo_image_surface_create_from_png(path.c_str());
+            CAIROSURFACE = PNG::createSurfaceFromPNG(path);
             mime = "image/png";
         } else if (first_word == "JPEG") {
             CAIROSURFACE  = JPEG::createSurfaceFromJPEG(path);

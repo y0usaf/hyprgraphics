@@ -17,7 +17,7 @@ jobs:
         run: |
           sed -i 's/SigLevel    = Required DatabaseOptional/SigLevel    = Optional TrustAll/' /etc/pacman.conf
           pacman --noconfirm --noprogressbar -Syyu
-          pacman --noconfirm --noprogressbar -Sy gcc base-devel cmake clang libc++ pixman cairo hyprutils libjpeg-turbo libjxl libwebp
+          pacman --noconfirm --noprogressbar -Sy gcc base-devel cmake clang libc++ pixman cairo hyprutils libjpeg-turbo libjxl libwebp libspng
 
       - name: Build hyprgraphics with gcc
         run: |
