@@ -2,30 +2,33 @@
 #include <format>
 #include <filesystem>
 #include <hyprgraphics/image/Image.hpp>
+#include <hyprgraphics/image/utils/ImageValidator.hpp>
 #include "shared.hpp"
 
 using namespace Hyprgraphics;
 
 bool tryLoadImage(const std::string& path) {
-    auto image = CImage(path);
-
-    if (!image.success()) {
-        std::println("Failed to load {}: {}", path, image.getError());
+    // Instead of creating a CImage directly, we now use the ImageValidator.
+    auto validationResult = ImageUtils::validateImage(path);
+    if (!validationResult) {
+        std::println("Failed to load {}: {}", path, validationResult.error());
         return false;
     }
-
-    std::println("Loaded {} successfully: Image is {}x{} of type {}", path, image.cairoSurface()->size().x, image.cairoSurface()->size().y, image.getMime());
+    auto pCairoSurface = validationResult.value();
+    std::println("Loaded {} successfully: Image is {}x{}",
+                 path,
+                 pCairoSurface->size().x,
+                 pCairoSurface->size().y);
 
     const auto TEST_DIR = std::filesystem::current_path().string() + "/test_output";
 
-    // try to write it for inspection
+    // write the image out for inspection
     if (!std::filesystem::exists(TEST_DIR))
         std::filesystem::create_directory(TEST_DIR);
 
-    std::string name = image.getMime();
-    std::replace(name.begin(), name.end(), '/', '_');
-
-    return cairo_surface_write_to_png(image.cairoSurface()->cairo(), (TEST_DIR + "/" + name + ".png").c_str()) == CAIRO_STATUS_SUCCESS;
+    // Since MIME is no longer available from CImage, we name the file based on its dimensions.
+    std::string name = std::to_string(pCairoSurface->size().x) + "x" + std::to_string(pCairoSurface->size().y);
+    return cairo_surface_write_to_png(pCairoSurface->cairo(), (TEST_DIR + "/" + name + ".png").c_str()) == CAIRO_STATUS_SUCCESS;
 }
 
 int main(int argc, char** argv, char** envp) {
@@ -39,7 +42,7 @@ int main(int argc, char** argv, char** envp) {
         if (file.path().filename() == "hyprland.jxl")
             expectation = false;
 #endif
-        EXPECT(tryLoadImage(file.path()), expectation);
+        EXPECT(tryLoadImage(file.path().string()), expectation);
     }
 
     return ret;

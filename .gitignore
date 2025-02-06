@@ -46,3 +46,7 @@ compile_commands.json
 hyprutils.pc
 
 tests/test_output/
+
+# Nix build outputs
+result
+result-*
